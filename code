@@ -1,0 +1,206 @@
+import random
+def get_players():
+    global players
+    global num_players
+    try:
+        print("GAME STARTS")
+        num_players = int(input("How many players are there? "))
+    except ValueError:
+        print("Enter the Numericals")
+        get_players()
+    for i in range(num_players):
+        name = input(f"Enter the name of player {i + 1}: ")
+        players.append(name)
+        num_age()
+    return players
+def taking_range(player,i):
+    global low
+    global high
+    global num
+    score=100
+    try:
+        if i==0:
+            print(f"Hey! {player} give the Range (Upper and lower limits )")
+            m,n=map(int,input("").split())
+            if m<0 or n<0:
+                print("ENter only positive values")
+                taking_range()
+            low,high = checkrange(m,n)
+            num=random.randrange(low,high)
+            print(f"I'm thinking of a number between {low} and {high}.")
+            print("Done with thinking :) ")
+            game(score,player,i)
+        else:
+            print(f"Here we go again! {player} ")
+            print(f"let me think about another number between range {low} and {high}")
+            num=random.randrange(low,high)
+            score=100
+            game(score,player,i)
+    except ValueError:
+        print("ReEnter the range values with same Excitment")
+        taking_range(player,i)
+    check_winners()
+def checkrange(m,n):
+    if m<n:
+        return m,n
+    else:
+        return n,m
+def num_age():
+    global age_list
+    try:
+        age=int(input(" Enter your age :"))
+        age_list.append(age)
+    except ValueError :
+        print("Age is always a Number ")
+        num_age()
+
+def dictionary(player,score,i):
+    global score_dict
+    try:
+        score_dict[player] = [score , age_list[i]]
+    except IndexError:
+        pass
+def check_winners():
+    try:
+        max_value = max([v[0] for v in score_dict.values()])
+        max_keys = [key for key, value in score_dict.items() if value == max_value]
+        min_value2 = min([v[1] for v in score_dict.values()])
+        for key, values in score_dict.items():
+            if values[0] == max_value:
+                name=key
+        if len(max_keys)<=1:
+            print(f"Winner of the game is {name} with score: {max_value}")
+        else:
+            for key, values in score_dict.items():
+                if values[0] == max_value and values[1] == min_value2:
+                    name=key
+            print(f"Winners of the game are more than one players with same score: {max_value}")
+            print("But based on age lesser the age , pobably is the winner")
+            print(f"So, The winner is {name} ")
+    except ValueError:
+        pass
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5)+1):
+        if n % i == 0:
+             return False
+        return True
+
+def game(score,player,i):
+    global low
+    global high
+    global num
+    global num_attempts
+    global max_attempt
+    global num_players
+    x=((low+high)/2)
+    numbers = [x for x in range(1,num)]
+    div_a=[]
+    num_attempts=0
+    for i in numbers:
+        if num%i==0:
+            div_a.append(i)
+    while(num_attempts<=max_attempts ):
+        try:
+                print("Guess the number between the range  ",low, " to ",high,":")
+                num_attempts += 1
+                score-=10
+                guess=int(input())
+                if guess==num:
+                    print(num)
+                    print("Awesome,You got ",score," points")
+                    dictionary(player,score,i)
+                    break
+
+
+                elif score==0 or num_attempts==max_attempts:
+                    score=0
+                    print("You lost the game")
+                    print(f"{player}, your score is 0 ")
+                    break
+                if num_attempts == 5:
+                    if num <=(x):
+                        print(f"Hint 5 : The secret number is less than {x}")
+                    else:
+                        print(f"Hint 5 : The secret number is greater than {x})")
+                elif num_attempts == 1:
+                    if num % 2 ==0:
+                        print("Hint 1 : The secret number is even")
+                    else:
+                        print("Hint 1 : The secret number is odd")
+
+                elif num_attempts == 2:
+                    if is_prime(num):
+                        print("Hint 2 : secret number is a prime number.")
+                    else:
+                        print("Hint 2 : secret number is not a prime number.")
+                elif num_attempts == 3 :
+                    if (is_prime(num)==True) and (num!=5):
+                        print(f"Hint 3 : The secret number cannot be divisible by 5")
+                    else:
+                        print(f"Hint 3: The secret number is divisible by : {div_a}")
+                elif num_attempts == 4:
+                    if  is_prime(num)==True:
+                        print(f"Hint 4 : The secret number cannot be divisible by 6")
+                    else:
+                        try:
+                            print("Hint 4 : The secret number is divisble by : ",div_a[1])
+                        except IndexError:
+                            print("Hint 4 : The secret number is divisble by : ",div_a[0])
+                elif num_attempts == 6:
+                    if(x>num):
+                        x=(x+high)/ 7.5
+                        if x>num:
+                            print("Hint 6 : The secret number is divisble by : ",div_a[0],f"and less than {x} ")
+                        else:
+                            print("Hint 6 : The secret number is divisble by : ",div_a[0],f"and greater than {x} ")
+                    else :
+                        x=(x+low)/2
+                        if x<num:
+                            print("Hint 6 : The secret number is divisble by : ",div_a[0],f"and gretaer than {x} ")
+                        else:
+                            print("Hint 6 : The secret number is divisble by : ",div_a[0],f"and less than {x} ")
+                elif num_attempts == 7:
+                    print("Hint 7 : The secret number is divisble by : ",max(div_a)-1)
+                elif num_attempts == 8:
+                    print("Hint 8 : The square of secret number is : ",num**2)
+                elif num_attempts == 9:
+                    print("Hint 9 : The cube root of secret number is : ",num**1/3)
+
+                else:
+                    score-=10
+                    print("recheck")
+                    print("", num ,"Doesn't lie between the range (",low,",",high,")")
+                    game(score,player,i)
+
+        except ValueError:
+            print("Invalid input, please enter a number between {low} and {high}.")
+            game(score,player,i)
+
+def game_Starts():
+    players=get_players()
+    for i in range(len(players)):
+        taking_range(players[i],i)
+    check_winners()
+print("Welcome to the Number Guessing game!")
+print("I will generate a random number between a minimum and maximum value.")
+print("You have a limited number of attempts to guess the number.")
+print("For each incorrect guess, I'll give you a hint and reduce your score.")
+print("Let's get started!\n")
+num_attempts=0
+max_attempts=10
+num_hints=0
+low=0
+high=0
+num=0
+num_players=0
+age_list=list()
+players=list()
+score_dict=dict()
+game_Starts()
+print("Do you want to play the game again")
+a=int(input("If you want to play the again select 'one(1)' to continue or 'zero(0)' to stop the game : "))
+if a==1:
+    players.clear()
+    game_Starts()
